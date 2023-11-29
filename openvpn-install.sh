@@ -2,7 +2,7 @@
 # shellcheck disable=SC1091,SC2164,SC2034,SC1072,SC1073,SC1009
 
 # Secure OpenVPN server installer for Debian, Ubuntu, CentOS, Amazon Linux 2, Fedora, Oracle Linux 8, Arch Linux, Rocky Linux and AlmaLinux.
-# https://github.com/angristan/openvpn-install
+# https://github.com/vuong1564/openvpn-install
 
 function isRoot() {
 	if [ "$EUID" -ne 0 ]; then
@@ -23,12 +23,12 @@ function checkOS() {
 
 		if [[ $ID == "debian" || $ID == "raspbian" ]]; then
 			if [[ $VERSION_ID -lt 9 ]]; then
-				echo "⚠️ Your version of Debian is not supported."
+				echo "⚠️ Version may chu Debian cua ban khong support."
 				echo ""
-				echo "However, if you're using Debian >= 9 or unstable/testing then you can continue, at your own risk."
+				echo "Tuy nhien, neu ban van muon tiep tuc hay can nhac ca loi co the xay ra."
 				echo ""
 				until [[ $CONTINUE =~ (y|n) ]]; do
-					read -rp "Continue? [y/n]: " -e CONTINUE
+					read -rp "Ban co muon tiep tuc hay khong ? [y/n]: " -e CONTINUE
 				done
 				if [[ $CONTINUE == "n" ]]; then
 					exit 1
@@ -38,12 +38,12 @@ function checkOS() {
 			OS="ubuntu"
 			MAJOR_UBUNTU_VERSION=$(echo "$VERSION_ID" | cut -d '.' -f1)
 			if [[ $MAJOR_UBUNTU_VERSION -lt 16 ]]; then
-				echo "⚠️ Your version of Ubuntu is not supported."
+				echo "⚠️ Version cua may chu Ubuntu cua ban khong ho tro."
 				echo ""
-				echo "However, if you're using Ubuntu >= 16.04 or beta, then you can continue, at your own risk."
+				echo "Tuy nhien, neu ban van muon tiep tuc hay can nhac ca loi co the xay ra."
 				echo ""
 				until [[ $CONTINUE =~ (y|n) ]]; do
-					read -rp "Continue? [y/n]: " -e CONTINUE
+					read -rp "Ban co muon tiep tuc hay khong ? [y/n]: " -e CONTINUE
 				done
 				if [[ $CONTINUE == "n" ]]; then
 					exit 1
@@ -58,9 +58,9 @@ function checkOS() {
 		if [[ $ID == "centos" || $ID == "rocky" || $ID == "almalinux" ]]; then
 			OS="centos"
 			if [[ ${VERSION_ID%.*} -lt 7 ]]; then
-				echo "⚠️ Your version of CentOS is not supported."
+				echo "⚠️ Version cua may chu CentOS cua ban khong ho tro."
 				echo ""
-				echo "The script only support CentOS 7 and CentOS 8."
+				echo "Script chi support CentOS 7 hoac CentOS 8."
 				echo ""
 				exit 1
 			fi
@@ -68,18 +68,18 @@ function checkOS() {
 		if [[ $ID == "ol" ]]; then
 			OS="oracle"
 			if [[ ! $VERSION_ID =~ (8) ]]; then
-				echo "Your version of Oracle Linux is not supported."
+				echo "Version cua may chu Oracle Linux cua ban khong ho tro."
 				echo ""
-				echo "The script only support Oracle Linux 8."
+				echo "Script chi support Oracle Linux 8."
 				exit 1
 			fi
 		fi
 		if [[ $ID == "amzn" ]]; then
 			OS="amzn"
 			if [[ $VERSION_ID != "2" ]]; then
-				echo "⚠️ Your version of Amazon Linux is not supported."
+				echo "⚠️ Version cua may chu Amazon Linux cua ban khong ho tro."
 				echo ""
-				echo "The script only support Amazon Linux 2."
+				echo "Script chi support Amazon Linux 2."
 				echo ""
 				exit 1
 			fi
@@ -87,18 +87,18 @@ function checkOS() {
 	elif [[ -e /etc/arch-release ]]; then
 		OS=arch
 	else
-		echo "Looks like you aren't running this installer on a Debian, Ubuntu, Fedora, CentOS, Amazon Linux 2, Oracle Linux 8 or Arch Linux system"
+		echo "Co ve may chu cua ban khong su dung 1 trong nhung he dieu hanh sau: Debian, Ubuntu, Fedora, CentOS, Amazon Linux 2, Oracle Linux 8 or Arch Linux system"
 		exit 1
 	fi
 }
 
 function initialCheck() {
 	if ! isRoot; then
-		echo "Sorry, you need to run this as root"
+		echo "Script yeu cau chay duoi quyen root"
 		exit 1
 	fi
 	if ! tunAvailable; then
-		echo "TUN is not available"
+		echo "TUN mode hien khong available"
 		exit 1
 	fi
 	checkOS
@@ -218,14 +218,14 @@ access-control: fd42:42:42:42::/112 allow' >>/etc/unbound/openvpn.conf
 
 function installQuestions() {
 	echo "Welcome to the OpenVPN installer!"
-	echo "The git repository is available at: https://github.com/angristan/openvpn-install"
+	echo "Repo này được maintain boi vuong1564"
 	echo ""
 
-	echo "I need to ask you a few questions before starting the setup."
-	echo "You can leave the default options and just press enter if you are ok with them."
+	echo "Ban can khai bao 1 so tham so truoc khi bat dau cai dat."
+	echo "Ban co the su dung cac gia tri mac dinh co san neu khong muon thay doi."
 	echo ""
-	echo "I need to know the IPv4 address of the network interface you want OpenVPN listening to."
-	echo "Unless your server is behind NAT, it should be your public IPv4 address."
+	echo "Ban can cung cap dia chi IPv4 ma ban muon su dung de public may chu VPN."
+	echo "Neu may chu la may chu private va duoc NAT service ra ngoai hay cung cap IP public dang duoc su dung."
 
 	# Detect public IPv4 address and pre-fill for the user
 	IP=$(ip -4 addr | sed -ne 's|^.* inet \([^/]*\)/.* scope global.*$|\1|p' | head -1)
@@ -241,17 +241,17 @@ function installQuestions() {
 	# If $IP is a private IP address, the server must be behind NAT
 	if echo "$IP" | grep -qE '^(10\.|172\.1[6789]\.|172\.2[0-9]\.|172\.3[01]\.|192\.168)'; then
 		echo ""
-		echo "It seems this server is behind NAT. What is its public IPv4 address or hostname?"
-		echo "We need it for the clients to connect to the server."
+		echo "Co ve may chu nay dang la may chu private hay cung cap IP public hoac domain ma may chu su dung."
+		echo "Thong tin nay duoc su dung de client ket noi den may chu"
 
 		PUBLICIP=$(curl -s https://api.ipify.org)
 		until [[ $ENDPOINT != "" ]]; do
-			read -rp "Public IPv4 address or hostname: " -e -i "$PUBLICIP" ENDPOINT
+			read -rp "Dia chi IPv4 public hoac domain cua may chu: " -e -i "$PUBLICIP" ENDPOINT
 		done
 	fi
 
 	echo ""
-	echo "Checking for IPv6 connectivity..."
+	echo "Kiem tra ket noi IPv6 ..."
 	echo ""
 	# "ping6" and "ping -6" availability varies depending on the distribution
 	if type ping6 >/dev/null 2>&1; then
@@ -260,20 +260,20 @@ function installQuestions() {
 		PING6="ping -6 -c3 ipv6.google.com > /dev/null 2>&1"
 	fi
 	if eval "$PING6"; then
-		echo "Your host appears to have IPv6 connectivity."
+		echo "Check thay co ket noi IPv6."
 		SUGGESTION="y"
 	else
-		echo "Your host does not appear to have IPv6 connectivity."
+		echo "Khong kiem tra thay ket noi IPv6 tren may chu cua ban."
 		SUGGESTION="n"
 	fi
 	echo ""
 	# Ask the user if they want to enable IPv6 regardless its availability.
 	until [[ $IPV6_SUPPORT =~ (y|n) ]]; do
-		read -rp "Do you want to enable IPv6 support (NAT)? [y/n]: " -e -i $SUGGESTION IPV6_SUPPORT
+		read -rp "Ban co muon bat mode IPv6 support (NAT)? [y/n]: " -e -i $SUGGESTION IPV6_SUPPORT
 	done
 	echo ""
-	echo "What port do you want OpenVPN to listen to?"
-	echo "   1) Default: 1194"
+	echo "Port service ma ban muon su dung cho OPENVPN server?"
+	echo "   1) Mac dinh: 1194"
 	echo "   2) Custom"
 	echo "   3) Random [49152-65535]"
 	until [[ $PORT_CHOICE =~ ^[1-3]$ ]]; do
@@ -295,8 +295,8 @@ function installQuestions() {
 		;;
 	esac
 	echo ""
-	echo "What protocol do you want OpenVPN to use?"
-	echo "UDP is faster. Unless it is not available, you shouldn't use TCP."
+	echo "Cai dat protocol ma OpenVPN se su dung?"
+	echo "UDP cho toc do cao nhat. Tru khi khong the su dung UDP, neu khong hay chon TCP."
 	echo "   1) UDP"
 	echo "   2) TCP"
 	until [[ $PROTOCOL_CHOICE =~ ^[1-2]$ ]]; do
@@ -311,8 +311,8 @@ function installQuestions() {
 		;;
 	esac
 	echo ""
-	echo "What DNS resolvers do you want to use with the VPN?"
-	echo "   1) Current system resolvers (from /etc/resolv.conf)"
+	echo "Cai dat DNS resolvers se su dung cho VPN Client?"
+	echo "   1) Su dung DNS cua he thong (from /etc/resolv.conf)"
 	echo "   2) Self-hosted DNS Resolver (Unbound)"
 	echo "   3) Cloudflare (Anycast: worldwide)"
 	echo "   4) Quad9 (Anycast: worldwide)"
@@ -329,14 +329,14 @@ function installQuestions() {
 		read -rp "DNS [1-12]: " -e -i 11 DNS
 		if [[ $DNS == 2 ]] && [[ -e /etc/unbound/unbound.conf ]]; then
 			echo ""
-			echo "Unbound is already installed."
-			echo "You can allow the script to configure it in order to use it from your OpenVPN clients"
-			echo "We will simply add a second server to /etc/unbound/unbound.conf for the OpenVPN subnet."
-			echo "No changes are made to the current configuration."
+			echo "Unbound da duoc install."
+			echo "Ban can cho phep script chinh sua configure de su dung cho OpenVPN clients"
+			echo "Script se them server thu 2 vao file config /etc/unbound/unbound.conf cho OpenVPN subnet."
+			echo "Khong co thay doi nao voi cau hinh hien tai."
 			echo ""
 
 			until [[ $CONTINUE =~ (y|n) ]]; do
-				read -rp "Apply configuration changes to Unbound? [y/n]: " -e CONTINUE
+				read -rp "Apply configuration hien tai cho Unbound server? [y/n]: " -e CONTINUE
 			done
 			if [[ $CONTINUE == "n" ]]; then
 				# Break the loop and cleanup
@@ -345,10 +345,10 @@ function installQuestions() {
 			fi
 		elif [[ $DNS == "13" ]]; then
 			until [[ $DNS1 =~ ^((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$ ]]; do
-				read -rp "Primary DNS: " -e DNS1
+				read -rp "May chu DNS chinh: " -e DNS1
 			done
 			until [[ $DNS2 =~ ^((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$ ]]; do
-				read -rp "Secondary DNS (optional): " -e DNS2
+				read -rp "Them may chu DNS phu (optional): " -e DNS2
 				if [[ $DNS2 == "" ]]; then
 					break
 				fi
@@ -356,17 +356,17 @@ function installQuestions() {
 		fi
 	done
 	echo ""
-	echo "Do you want to use compression? It is not recommended since the VORACLE attack makes use of it."
+	echo "Ban co muon su dung tinh nag compression khong? No khong duoc khuyen khich vi hacker co the dung cach tan cong VORACLE de khai thac lo hong."
 	until [[ $COMPRESSION_ENABLED =~ (y|n) ]]; do
-		read -rp"Enable compression? [y/n]: " -e -i n COMPRESSION_ENABLED
+		read -rp"Bat tinh nag compression? [y/n]: " -e -i n COMPRESSION_ENABLED
 	done
 	if [[ $COMPRESSION_ENABLED == "y" ]]; then
-		echo "Choose which compression algorithm you want to use: (they are ordered by efficiency)"
+		echo "Chon thuat toan nen ban muon su dung: (cac thuat toan duoc sap xep theo do hieu qua)"
 		echo "   1) LZ4-v2"
 		echo "   2) LZ4"
 		echo "   3) LZ0"
 		until [[ $COMPRESSION_CHOICE =~ ^[1-3]$ ]]; do
-			read -rp"Compression algorithm [1-3]: " -e -i 1 COMPRESSION_CHOICE
+			read -rp"Lua chon thuat toan [1-3]: " -e -i 1 COMPRESSION_CHOICE
 		done
 		case $COMPRESSION_CHOICE in
 		1)
@@ -381,10 +381,10 @@ function installQuestions() {
 		esac
 	fi
 	echo ""
-	echo "Do you want to customize encryption settings?"
-	echo "Unless you know what you're doing, you should stick with the default parameters provided by the script."
-	echo "Note that whatever you choose, all the choices presented in the script are safe. (Unlike OpenVPN's defaults)"
-	echo "See https://github.com/angristan/openvpn-install#security-and-encryption to learn more."
+	echo "Ban co muon customize encryption settings?"
+	echo "Neu ban khong co nhieu hieu biet ve option nay hay su dung cac tham so mac dinh ma script cung cap."
+	# echo "Note that whatever you choose, all the choices presented in the script are safe. (Unlike OpenVPN's defaults)"
+	echo "Tham khao them tai https://github.com/vuong1564/openvpn-install#security-and-encryption de co them thong tin."
 	echo ""
 	until [[ $CUSTOMIZE_ENC =~ (y|n) ]]; do
 		read -rp "Customize encryption settings? [y/n]: " -e -i n CUSTOMIZE_ENC
@@ -401,7 +401,7 @@ function installQuestions() {
 		TLS_SIG="1" # tls-crypt
 	else
 		echo ""
-		echo "Choose which cipher you want to use for the data channel:"
+		echo "Chon loai ma hoa ban muon su dung:"
 		echo "   1) AES-128-GCM (recommended)"
 		echo "   2) AES-192-GCM"
 		echo "   3) AES-256-GCM"
@@ -462,7 +462,7 @@ function installQuestions() {
 			;;
 		2)
 			echo ""
-			echo "Choose which size you want to use for the certificate's RSA key:"
+			echo "Chon kich thuoc cua certificate RSA key:"
 			echo "   1) 2048 bits (recommended)"
 			echo "   2) 3072 bits"
 			echo "   3) 4096 bits"
@@ -483,7 +483,7 @@ function installQuestions() {
 			;;
 		esac
 		echo ""
-		echo "Choose which cipher you want to use for the control channel:"
+		echo "Chon loai ma hoa ma ban muon su dung cho channel:"
 		case $CERT_TYPE in
 		1)
 			echo "   1) ECDHE-ECDSA-AES-128-GCM-SHA256 (recommended)"
@@ -517,7 +517,7 @@ function installQuestions() {
 			;;
 		esac
 		echo ""
-		echo "Choose what kind of Diffie-Hellman key you want to use:"
+		echo "Chonj loai Diffie-Hellman key ma ban muon su dung:"
 		echo "   1) ECDH (recommended)"
 		echo "   2) DH"
 		until [[ $DH_TYPE =~ [1-2] ]]; do
@@ -526,7 +526,7 @@ function installQuestions() {
 		case $DH_TYPE in
 		1)
 			echo ""
-			echo "Choose which curve you want to use for the ECDH key:"
+			echo "Chon loai curve ban muon su dung cho ECDH key:"
 			echo "   1) prime256v1 (recommended)"
 			echo "   2) secp384r1"
 			echo "   3) secp521r1"
@@ -547,7 +547,7 @@ function installQuestions() {
 			;;
 		2)
 			echo ""
-			echo "Choose what size of Diffie-Hellman key you want to use:"
+			echo "Chon kich thuoc cua Diffie-Hellman key ban muon su dung:"
 			echo "   1) 2048 bits (recommended)"
 			echo "   2) 3072 bits"
 			echo "   3) 4096 bits"
@@ -574,7 +574,7 @@ function installQuestions() {
 		elif [[ $CIPHER =~ GCM$ ]]; then
 			echo "The digest algorithm authenticates tls-auth packets from the control channel."
 		fi
-		echo "Which digest algorithm do you want to use for HMAC?"
+		echo "Chon loai thuat toan ban muon su dung cho HMAC?"
 		echo "   1) SHA-256 (recommended)"
 		echo "   2) SHA-384"
 		echo "   3) SHA-512"
@@ -593,8 +593,8 @@ function installQuestions() {
 			;;
 		esac
 		echo ""
-		echo "You can add an additional layer of security to the control channel with tls-auth and tls-crypt"
-		echo "tls-auth authenticates the packets, while tls-crypt authenticate and encrypt them."
+		echo "Ban co the them 1 lop bao mat bo sung vao channel voi tls-auth va tls-crypt"
+		echo "tls-auth authenticates cho cac packets, trong khi tls-crypt authenticate va encrypt chung."
 		echo "   1) tls-crypt (recommended)"
 		echo "   2) tls-auth"
 		until [[ $TLS_SIG =~ [1-2] ]]; do
@@ -602,8 +602,8 @@ function installQuestions() {
 		done
 	fi
 	echo ""
-	echo "Okay, that was all I needed. We are ready to setup your OpenVPN server now."
-	echo "You will be able to generate a client at the end of the installation."
+	echo "Ban da hoan thanh viec khai bao tham so dau vao. Con viec cai dat OpenVPN server se duoc bat dau ngay bay gio."
+	echo "Ban co the them client tai buoc cuoi cung sau khi cai dat hoan tat."
 	APPROVE_INSTALL=${APPROVE_INSTALL:-n}
 	if [[ $APPROVE_INSTALL =~ n ]]; then
 		read -n1 -r -p "Press any key to continue..."
@@ -653,7 +653,7 @@ function installOpenVPN() {
 		echo "Can not detect public interface."
 		echo "This needs for setup MASQUERADE."
 		until [[ $CONTINUE =~ (y|n) ]]; do
-			read -rp "Continue? [y/n]: " -e CONTINUE
+			read -rp "Ban co muon tiep tuc hay khong ? [y/n]: " -e CONTINUE
 		done
 		if [[ $CONTINUE == "n" ]]; then
 			exit 1
@@ -1054,23 +1054,23 @@ verb 3" >>/etc/openvpn/client-template.txt
 
 	# Generate the custom client.ovpn
 	newClient
-	echo "If you want to add more clients, you simply need to run this script another time!"
+	echo "Neu ban muon them cac client khac, hay chay lai script nay sau khi hoan tat cai dat!"
 }
 
 function newClient() {
 	echo ""
-	echo "Tell me a name for the client."
-	echo "The name must consist of alphanumeric character. It may also include an underscore or a dash."
+	echo "Cung cap ten cua client."
+	echo "Ten cua client khong duoc chua cac ky tu dac biet. No co the bao gom dau gach duoi hoac dau gach ngang."
 
 	until [[ $CLIENT =~ ^[a-zA-Z0-9_-]+$ ]]; do
 		read -rp "Client name: " -e CLIENT
 	done
 
 	echo ""
-	echo "Do you want to protect the configuration file with a password?"
+	echo "Ban co muon them password cho client?"
 	echo "(e.g. encrypt the private key with a password)"
-	echo "   1) Add a passwordless client"
-	echo "   2) Use a password for the client"
+	echo "   1) Khong them password cho client"
+	echo "   2) Them password cho client"
 
 	until [[ $PASS =~ ^[1-2]$ ]]; do
 		read -rp "Select an option [1-2]: " -e -i 1 PASS
@@ -1079,7 +1079,7 @@ function newClient() {
 	CLIENTEXISTS=$(tail -n +2 /etc/openvpn/easy-rsa/pki/index.txt | grep -c -E "/CN=$CLIENT\$")
 	if [[ $CLIENTEXISTS == '1' ]]; then
 		echo ""
-		echo "The specified client CN was already found in easy-rsa, please choose another name."
+		echo "Ten cua client nay da duoc su dung, hay cung cap 1 ten khac cho client."
 		exit
 	else
 		cd /etc/openvpn/easy-rsa/ || return
@@ -1088,7 +1088,7 @@ function newClient() {
 			./easyrsa --batch build-client-full "$CLIENT" nopass
 			;;
 		2)
-			echo "⚠️ You will be asked for the client password below ⚠️"
+			echo "⚠️ Hay cung cap password cho client ⚠️"
 			./easyrsa --batch build-client-full "$CLIENT"
 			;;
 		esac
@@ -1150,8 +1150,8 @@ function newClient() {
 	} >>"$homeDir/$CLIENT.ovpn"
 
 	echo ""
-	echo "The configuration file has been written to $homeDir/$CLIENT.ovpn."
-	echo "Download the .ovpn file and import it in your OpenVPN client."
+	echo "File client da duoc luu tai $homeDir/$CLIENT.ovpn."
+	echo "Download file .ovpn nay va import vao OpenVPN client de su dung."
 
 	exit 0
 }
@@ -1160,12 +1160,12 @@ function revokeClient() {
 	NUMBEROFCLIENTS=$(tail -n +2 /etc/openvpn/easy-rsa/pki/index.txt | grep -c "^V")
 	if [[ $NUMBEROFCLIENTS == '0' ]]; then
 		echo ""
-		echo "You have no existing clients!"
+		echo "May chu khong ton tai client duoc khai bao truoc do!"
 		exit 1
 	fi
 
 	echo ""
-	echo "Select the existing client certificate you want to revoke"
+	echo "Chon 1 client certificate ban muon thu hoi"
 	tail -n +2 /etc/openvpn/easy-rsa/pki/index.txt | grep "^V" | cut -d '=' -f 2 | nl -s ') '
 	until [[ $CLIENTNUMBER -ge 1 && $CLIENTNUMBER -le $NUMBEROFCLIENTS ]]; do
 		if [[ $CLIENTNUMBER == '1' ]]; then
@@ -1187,7 +1187,7 @@ function revokeClient() {
 	cp /etc/openvpn/easy-rsa/pki/index.txt{,.bk}
 
 	echo ""
-	echo "Certificate for client $CLIENT revoked."
+	echo "Certificate cua client $CLIENT da duoc."
 }
 
 function removeUnbound() {
@@ -1197,8 +1197,8 @@ function removeUnbound() {
 
 	until [[ $REMOVE_UNBOUND =~ (y|n) ]]; do
 		echo ""
-		echo "If you were already using Unbound before installing OpenVPN, I removed the configuration related to OpenVPN."
-		read -rp "Do you want to completely remove Unbound? [y/n]: " -e REMOVE_UNBOUND
+		echo "Neu ban da cai dat Unbound tren may chu truoc khi cai dat OpenVPN, Toi se xoa cac cau hinh lien quan den OpenVPN."
+		read -rp "Ban co muon loai bo Unbound? [y/n]: " -e REMOVE_UNBOUND
 	done
 
 	if [[ $REMOVE_UNBOUND == 'y' ]]; then
@@ -1218,17 +1218,17 @@ function removeUnbound() {
 		rm -rf /etc/unbound/
 
 		echo ""
-		echo "Unbound removed!"
+		echo "Unbound da duoc removed!"
 	else
 		systemctl restart unbound
 		echo ""
-		echo "Unbound wasn't removed."
+		echo "Unbound chua duoc removed."
 	fi
 }
 
 function removeOpenVPN() {
 	echo ""
-	read -rp "Do you really want to remove OpenVPN? [y/n]: " -e -i n REMOVE
+	read -rp "Ban co muon remove OpenVPN? [y/n]: " -e -i n REMOVE
 	if [[ $REMOVE == 'y' ]]; then
 		# Get OpenVPN port from the configuration
 		PORT=$(grep '^port ' /etc/openvpn/server.conf | cut -d " " -f 2)
@@ -1295,23 +1295,23 @@ function removeOpenVPN() {
 			removeUnbound
 		fi
 		echo ""
-		echo "OpenVPN removed!"
+		echo "OpenVPN da duoc removed!"
 	else
 		echo ""
-		echo "Removal aborted!"
+		echo "Qua trinh Removal da bi huy!"
 	fi
 }
 
 function manageMenu() {
 	echo "Welcome to OpenVPN-install!"
-	echo "The git repository is available at: https://github.com/angristan/openvpn-install"
+	echo "Repo nay duoc maintain boi vuong1564"
 	echo ""
-	echo "It looks like OpenVPN is already installed."
+	echo "OpenVPN server da duoc cai dat tren may chu cua ban"
 	echo ""
-	echo "What do you want to do?"
-	echo "   1) Add a new user"
-	echo "   2) Revoke existing user"
-	echo "   3) Remove OpenVPN"
+	echo "Hanh dong ban muon chon la gi?"
+	echo "   1) Them moi 1 user"
+	echo "   2) Thu hoi user da duoc cap truoc do"
+	echo "   3) Go cai dat may chu OpenVPN"
 	echo "   4) Exit"
 	until [[ $MENU_OPTION =~ ^[1-4]$ ]]; do
 		read -rp "Select an option [1-4]: " MENU_OPTION
